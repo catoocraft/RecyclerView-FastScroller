@@ -42,12 +42,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.Runnable
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -383,15 +378,18 @@ class RecyclerViewFastScroller @JvmOverloads constructor(
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    override fun onFinishInflate() {
-        super.onFinishInflate()
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
         // skip the two children add, aka popup and track and check if the RecyclerView is added via XML or not, if added call the attach directly.
         if (childCount > 2) {
-            for (childAt: Int in 2 until childCount) {
+            for (childAt: Int in 0 until childCount) {
                 val currentView = getChildAt(childAt)
                 if (currentView is RecyclerView) {
-                    removeView(currentView)
-                    addView(currentView, 0)
+                    if (childAt != 0) {
+                        // bring to the front
+                        removeView(currentView)
+                        addView(currentView, 0)
+                    }
                     attachFastScrollerToRecyclerView(currentView)
                 }
             }
