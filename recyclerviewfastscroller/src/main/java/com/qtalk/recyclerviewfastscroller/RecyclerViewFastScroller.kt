@@ -377,9 +377,22 @@ class RecyclerViewFastScroller @JvmOverloads constructor(
         super.onDetachedFromWindow()
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+            setUp()
+        }
+    }
+
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+            setUp()
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setUp() {
         // skip the two children add, aka popup and track and check if the RecyclerView is added via XML or not, if added call the attach directly.
         if (childCount > 2) {
             for (childAt: Int in 0 until childCount) {
